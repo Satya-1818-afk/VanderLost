@@ -34,6 +34,8 @@ app.get("/",(req,res)=>{
     res.send("hi , i am root");
 });
 
+
+//SCHEMA VALIDATION
 const validateListing=(req,res,next)=>{
     let {error}= listingSchema.validate(req.body);
     

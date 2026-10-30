@@ -10,6 +10,9 @@ const {listingSchema}=require("./schema");
 const {reviewSchema}=require("./schema");
 const Review=require("./models/review");
 
+const listings=require("./routes/listing");
+const reviews=require("./routes/review");
+
 
 const MONGO_URL="mongodb://127.0.0.1:27017/vanderLost";
 
@@ -37,105 +40,11 @@ app.get("/",(req,res)=>{
 });
 
 
-//SCHEMA VALIDATION
-const validateListing=(req,res,next)=>{
-    let {error}= listingSchema.validate(req.body);
-    
-    if(error){
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
-
-const validateReview=(req,res,next)=>{
-    let{error}=reviewSchema.validate(req.body);
-    if(error){
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
-
-app.get("/listings",async (req,res)=>{
-    let allListings=await Listing.find({});
-    res.render("listings/index.ejs",{allListings});
-    
-});
-
-//new route
-app.get("/listings/new",async(req,res)=>{
-    res.render("listings/new.ejs");
-
-})
-
-//show route
-app.get("/listings/:id", async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listing.findById(id).populate("reviews");
-    if (!listing) {
-        return res.send("Listing not found");
-    }
-    res.render("listings/show.ejs", { listing });
-});
 
 
-//create Route
-app.post("/listings",validateListing,async (req,res)=>{
-   const newListing=new Listing(req.body.listing);
-   await newListing.save();
-   res.redirect("/listings");
-})
 
-//edit route
-app.get("/listings/:id/edit",async (req,res)=>{
-    let {id}=req.params;
-    let listing = await Listing.findById(id);
-    res.render("listings/edit.ejs",{listing});
-});
-
-
-app.put("/listings/:id",validateListing,async(req,res)=>{
-    let {id}=req.params;
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send Valid data for listing")
-    }
-    await Listing.findByIdAndUpdate(id,{ ...req.body.listing});
-    res.redirect(`/listings/${id}`);
-
-})
-
-app.delete("/listings/:id",async (req,res)=>{
-    let {id}=req.params;
-    let DeletedListing=await Listing.findByIdAndDelete(id);
-    console.log(DeletedListing);
-    res.redirect("/listings");
-});
-
-//reviews-POST Route
-app.post("/listings/:id/reviews",validateReview,async(req,res)=>{
-    let listing=await Listing.findById(req.params.id);
-    let newReview=new Review(req.body.review);
-
-    listing.reviews.push(newReview);
-
-    await newReview.save();
-    await listing.save();
-    
-    res.redirect(`/listings/${listing._id}`);
-
-})
-
-//Delete-review route
-app.delete("/listings/:id/reviews/:reviewId",async(req,res)=>{
-    let {id,reviewId}=req.params;
-    await Listing.findByIdAndUpdate(id,{$pull:{review:reviewId}});
-    await Review.findByIdAndDelete(reviewId);
-
-    res.redirect(`/listings/${id}`);
-})
+app.use("/listings",listings);
+app.use("/listings/:id/reviews",reviews);
 
 // app.get("/testListing",async (req,res)=>{
 //     let sampleListing=new Listing({

@@ -7,6 +7,7 @@ const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");
 const ExpressError=require("./utils/ExpressError");
 const {listingSchema}=require("./schema");
+const {reviewSchema}=require("./schema");
 const Review=require("./models/review");
 
 
@@ -48,6 +49,15 @@ const validateListing=(req,res,next)=>{
     }
 }
 
+const validateReview=(req,res,next)=>{
+    let{error}=reviewSchema.validate(req.body);
+    if(error){
+        let errMsg=error.details.map((el)=>el.message).join(",");
+        throw new ExpressError(400,errMsg);
+    }else{
+        next();
+    }
+}
 
 app.get("/listings",async (req,res)=>{
     let allListings=await Listing.find({});
@@ -108,7 +118,7 @@ app.delete("/listings/:id",async (req,res)=>{
 });
 
 //reviews-POST Route
-app.post("/listings/:id/reviews",async(req,res)=>{
+app.post("/listings/:id/reviews",validateReview,async(req,res)=>{
     let listing=await Listing.findById(req.params.id);
     let newReview=new Review(req.body.review);
 

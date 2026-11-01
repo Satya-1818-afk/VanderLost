@@ -11,10 +11,13 @@ const {reviewSchema}=require("./schema");
 const Review=require("./models/review");
 const session=require("express-session");
 const flash=require("connect-flash");
+const passport=require("passport");
+const LocalStrategy=require("passport-local");
+const User=require("./models/user");
 
-const listings=require("./routes/listing");
-const reviews=require("./routes/review");
-
+const listingRouter=require("./routes/listing");
+const reviewRouter=require("./routes/review");
+const userRouter=require("./routes/user");
 
 const MONGO_URL="mongodb://127.0.0.1:27017/vanderLost";
 
@@ -56,14 +59,37 @@ app.get("/",(req,res)=>{
 app.use(session(sessionOptions));
 app.use(flash());
 
+app.use(passport.initialize());//Initializes passport in your express appplication
+app.use(passport.session());//allows passport to maintain persistent login session
+passport.use(new LocalStrategy(User.authenticate()));//Register a local username/password authentication strategy with Passport, using the authentication function provided by my User model
+//Browser sends username and password.
+//Passport Local receives the credentials.
+//User.authenticate() checks the username and password.
+//If correct, the user is authenticated.
+//If incorrect, authentication fails.
+passport.serializeUser(User.serializeUser());//Serialize = Store user identification
+passport.deserializeUser(User.deserializeUser());//Deserialize = Retrieve the user using the stored ID.
+
 app.use((req,res,next)=>{
     res.locals.successMsg=req.flash("success");
     res.locals.errorMsg=req.flash("error");
     next();
 });
 
-app.use("/listings",listings);
-app.use("/listings/:id/reviews",reviews);
+app.get("/demouser",async (req,res,next)=>{
+    let fakeUser=new User({
+        email:"student@gmail.com",
+        username:"delta-student"
+    });
+
+    let registeredUser=await User.register(fakeUser,"helloworld");
+    res.send(registeredUser);
+
+});
+
+app.use("/listings",listingRouter);
+app.use("/listings/:id/reviews",reviewRouter);
+app.use("/",userRouter);
 
 // app.get("/testListing",async (req,res)=>{
 //     let sampleListing=new Listing({

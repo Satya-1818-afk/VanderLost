@@ -5,6 +5,7 @@ const {listingSchema,reviewSchema}=require("../schema");
 const Listing=require("../models/listing");
 const User=require("../models/user");
 const passport = require("passport");
+const {saveRedirectUrl}=require("../middleware");
 
     router.get("/signup",(req,res)=>{
         res.render("users/signup.ejs");
@@ -21,7 +22,7 @@ const passport = require("passport");
                     return next(err);
                 }
             req.flash("success","Welcome to VanderLost");
-            res.redirect(req.session.redirectUrl);
+            res.redirect("/listings");
             })
         }
         catch(e){
@@ -35,9 +36,10 @@ const passport = require("passport");
         res.render("users/login.ejs");
     })
 
-    router.post("/login",passport.authenticate('local',{failureRedirect:'/login',failureFlash:true}),async(req,res)=>{
+    router.post("/login",saveRedirectUrl,passport.authenticate('local',{failureRedirect:'/login',failureFlash:true}),async(req,res)=>{
         req.flash("success","Welcome to VandeLost!You are logged in");
-        res.redirect("/listings");
+        let redirectUrl=res.locals.redirectUrl || "/listings";
+        res.redirect(redirectUrl);
     });
 
     router.get("/logout",(req,res,next)=>{

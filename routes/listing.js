@@ -3,7 +3,7 @@ const router=express.Router();
 const ExpressError=require("../utils/ExpressError");
 const {listingSchema,reviewSchema}=require("../schema");
 const Listing=require("../models/listing");
-
+const{isLoggedIn}=require("../middleware")
 
 //SCHEMA VALIDATION
 const validateListing=(req,res,next)=>{
@@ -25,9 +25,8 @@ router.get("/",async (req,res)=>{
 });
 
 //new route
-router.get("/new",async(req,res)=>{
-    res.render("listings/new.ejs");
-
+router.get("/new",isLoggedIn,async(req,res)=>{
+        res.render("listings/new.ejs");
 })
 
 //show route
@@ -51,7 +50,7 @@ router.post("/",validateListing,async (req,res)=>{
 })
 
 //edit route
-router.get("/:id/edit",async (req,res)=>{
+router.get("/:id/edit",isLoggedIn,async (req,res)=>{
     let {id}=req.params;
     let listing = await Listing.findById(id);
     if(!listing){
@@ -62,7 +61,7 @@ router.get("/:id/edit",async (req,res)=>{
 });
 
 
-router.put("/:id",validateListing,async(req,res)=>{
+router.put("/:id",isLoggedIn,validateListing,async(req,res)=>{
     let {id}=req.params;
     if(!req.body.listing){
         throw new ExpressError(400,"Send Valid data for listing")
@@ -73,7 +72,7 @@ router.put("/:id",validateListing,async(req,res)=>{
 
 })
 
-router.delete("/:id",async (req,res)=>{
+router.delete("/:id",isLoggedIn,async (req,res)=>{
     let {id}=req.params;
     let DeletedListing=await Listing.findByIdAndDelete(id);
     console.log(DeletedListing);

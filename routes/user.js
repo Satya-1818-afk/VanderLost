@@ -16,8 +16,13 @@ const passport = require("passport");
             const newUser=new User({email,username});
             const registeredUser=await User.register(newUser,password);
             console.log(registeredUser);
+            req.login(registeredUser,(err)=>{
+                if(err){
+                    return next(err);
+                }
             req.flash("success","Welcome to VanderLost");
-            res.redirect("/listings");
+            res.redirect(req.session.redirectUrl);
+            })
         }
         catch(e){
             req.flash("error",e.message);
@@ -34,4 +39,14 @@ const passport = require("passport");
         req.flash("success","Welcome to VandeLost!You are logged in");
         res.redirect("/listings");
     });
+
+    router.get("/logout",(req,res,next)=>{
+        req.logout((err)=>{
+            if(err){
+              return  next(err);
+            }
+            req.flash("success","You are logged out");
+            res.redirect("/listings");
+        })
+    })
 module.exports=router;

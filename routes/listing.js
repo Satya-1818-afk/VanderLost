@@ -1,7 +1,8 @@
 const express=require("express");
 const router=express.Router();
 const Listing=require("../models/listing");
-const{isLoggedIn,isOwner,validateListing}=require("../middleware")
+const{isLoggedIn,isOwner,validateListing}=require("../middleware");
+const { populate } = require("../models/review");
 
 
 //index route
@@ -19,12 +20,11 @@ router.get("/new",isLoggedIn,async(req,res)=>{
 //show route
 router.get("/:id", async (req, res) => {
     let { id } = req.params;
-    let listing = await Listing.findById(id).populate("reviews").populate("owner");
+    let listing = await Listing.findById(id).populate({path:"reviews",populate:{path:"author"}}).populate("owner");
     if(!listing){
         req.flash("error","Listing you requested for does not exist!");
         return res.redirect("/listings");
     }
-    console.log(listing);
     res.render("listings/show.ejs", { listing });
 });
 

@@ -6,33 +6,13 @@ const Review=require("../models/review");
 const Listing=require("../models/listing");
 const{validateReview,isLoggedIn,isReviewAuthor}=require("../middleware")
 
-
+const reviewController=require("../controllers/reviews")
 
 //reviews-POST Route
-router.post("/",isLoggedIn,validateReview,async(req,res)=>{
-    let listing=await Listing.findById(req.params.id);
-    let newReview=new Review(req.body.review);
-    newReview.author=req.user._id;
-    listing.reviews.push(newReview);
-
-    await newReview.save();
-    await listing.save();
-    req.flash("success","New Review Created!");
-    
-    res.redirect(`/listings/${listing._id}`);
-
-})
+router.post("/",isLoggedIn,validateReview,reviewController.createReview)
 
 //Delete-review route
-router.delete("/:reviewId",isLoggedIn,isReviewAuthor,async(req,res)=>{
-    let {id,reviewId}=req.params;
-    await Listing.findByIdAndUpdate(id,{$pull:{review:reviewId}});
-    await Review.findByIdAndDelete(reviewId);
-   req.flash("success","Review Deleted!");
-    
-
-    res.redirect(`/listings/${id}`);
-})
+router.delete("/:reviewId",isLoggedIn,isReviewAuthor,reviewController.deleteReview)
 
 module.exports=router;
 

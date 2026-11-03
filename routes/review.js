@@ -4,17 +4,9 @@ const ExpressError=require("../utils/ExpressError");
 const {listingSchema,reviewSchema}=require("../schema");
 const Review=require("../models/review");
 const Listing=require("../models/listing");
+const{validateReview}=require("../middleware")
 
 
-const validateReview=(req,res,next)=>{
-    let{error}=reviewSchema.validate(req.body);
-    if(error){
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
 
 //reviews-POST Route
 router.post("/",validateReview,async(req,res)=>{

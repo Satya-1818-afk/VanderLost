@@ -1,21 +1,8 @@
 const express=require("express");
 const router=express.Router();
-const ExpressError=require("../utils/ExpressError");
-const {listingSchema,reviewSchema}=require("../schema");
 const Listing=require("../models/listing");
-const{isLoggedIn}=require("../middleware")
+const{isLoggedIn,isOwner,validateListing}=require("../middleware")
 
-//SCHEMA VALIDATION
-const validateListing=(req,res,next)=>{
-    let {error}= listingSchema.validate(req.body);
-    
-    if(error){
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
 
 //index route
 router.get("/",async (req,res)=>{
@@ -52,7 +39,7 @@ router.post("/",validateListing,async (req,res)=>{
 })
 
 //edit route
-router.get("/:id/edit",isLoggedIn,async (req,res)=>{
+router.get("/:id/edit",isLoggedIn,isOwner,async (req,res)=>{
     let {id}=req.params;
     let listing = await Listing.findById(id);
     if(!listing){
@@ -63,18 +50,15 @@ router.get("/:id/edit",isLoggedIn,async (req,res)=>{
 });
 
 
-router.put("/:id",isLoggedIn,validateListing,async(req,res)=>{
+router.put("/:id",isLoggedIn,isOwner,validateListing,async(req,res)=>{
     let {id}=req.params;
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send Valid data for listing")
-    }
     await Listing.findByIdAndUpdate(id,{ ...req.body.listing});
     req.flash("success"," Listing Updated!");
     res.redirect(`/listings/${id}`);
 
 })
 
-router.delete("/:id",isLoggedIn,async (req,res)=>{
+router.delete("/:id",isLoggedIn,isOwner,async (req,res)=>{
     let {id}=req.params;
     let DeletedListing=await Listing.findByIdAndDelete(id);
     console.log(DeletedListing);

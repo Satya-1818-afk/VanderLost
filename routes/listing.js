@@ -3,12 +3,14 @@ const router=express.Router();
 const Listing=require("../models/listing");
 const{isLoggedIn,isOwner,validateListing}=require("../middleware");
 const { populate } = require("../models/review");
-
 const listingController=require("../controllers/listings")
+const multer  = require('multer')
+const {storage}=require("../cloudConfig");
+const upload = multer({ storage })
 
 router.route("/")
 .get(listingController.index)
-.post(validateListing,listingController.createListing)
+.post(isLoggedIn,validateListing,upload.single('listing[image]'),listingController.createListing)
 
 //new route
 router.get("/new",isLoggedIn,listingController.renderNewForm)

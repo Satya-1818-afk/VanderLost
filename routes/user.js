@@ -9,13 +9,15 @@ const {saveRedirectUrl}=require("../middleware");
 
 const userController=require("../controllers/users");
 
-    router.get("/signup",userController.getsignup);
+router.route("/signup")
+.get(userController.getsignup)
+.post(userController.signup)
 
-    router.post("/signup",userController.signup);
+router.route("/login")
+.get(userController.getlogin)
+.post(saveRedirectUrl,passport.authenticate('local',{failureRedirect:'/login',failureFlash:true}),userController.login)
 
-    router.get("/login",userController.getlogin)
+router.get("/logout",userController.logout)
 
-    router.post("/login",saveRedirectUrl,passport.authenticate('local',{failureRedirect:'/login',failureFlash:true}),userController.login);
 
-    router.get("/logout",userController.logout)
 module.exports=router;

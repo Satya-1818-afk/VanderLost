@@ -1,4 +1,16 @@
+<style>
+.btn-search{
+  background-color: #fe424d;
+  color: white;
+}
+.btn-search:hover{
+  background-color: #fe424d;
+  color: #fff;
+}
 
+.btn-
+
+</style>
 <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
   <div class="container-fluid">
 
@@ -22,6 +34,14 @@
       <div class="navbar-nav">
         <a class="nav-link text-dark" href="/listings">Explore</a>
       </div>
+
+      <div class="navbar-nav ms-auto">
+         <form class="d-flex" role="search">
+      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+      <button class="btn btn-search" type="submit">Search</button>
+    </form>
+      </div>
+
       <div class="navbar-nav ms-auto">
         <a class="nav-link text-dark" href="/listings/new">Airbnb your home</a>
         <% if(!currUser){ %>

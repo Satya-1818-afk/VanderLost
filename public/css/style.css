@@ -131,4 +131,30 @@ body{
 #map { 
     height: 400px;
     width: 700px;
+};
+
+/* for the marker on the map */
+
+.home-marker {
+    width: 48px;
+    height: 48px;
+    background: #222;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.home-marker::after {
+    content: "";
+    position: absolute;
+    bottom: -7px;
+    left: 16px;
+    width: 16px;
+    height: 16px;
+    background: #222;
+    transform: rotate(45deg);
+    z-index: -1;
 }

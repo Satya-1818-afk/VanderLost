@@ -1,11 +1,66 @@
 <% layout("/layouts/boilerplate") %>
+<style>
+  #filters{
+    display: flex;
+  }
 
-  <h3>ALL APP LISTINGSSSS:</h3>  
-  <!-- <form action="/listings/new">
-    <button>Add new</button>
-  </form> -->
+  .filter{
+    text-align: center;
+    margin-right:2rem;
+    margin-top: 1rem;
+    opacity:0.7;
 
-  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+  }
+  .filter:hover{
+    opacity: 1;
+    cursor: pointer;
+  }
+</style>
+
+  <div id="filters">
+    <div class="filter">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+    <div class="filter">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+  </div>
+
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
       <% for(let list of allListings) {%>
         <a href="/listings/<%= list._id %>" class="listing-link">
     <div class="card listing-card">

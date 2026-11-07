@@ -1,7 +1,8 @@
 if(process.env.NODE_ENV !="production"){
 require('dotenv').config();
 }
-
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 const express= require("express");
 const app=express();
 const mongoose= require("mongoose");
@@ -14,6 +15,7 @@ const {listingSchema}=require("./schema");
 const {reviewSchema}=require("./schema");
 const Review=require("./models/review");
 const session=require("express-session");
+const MongoStore = require('connect-mongo').default;
 const flash=require("connect-flash");
 const passport=require("passport");
 const LocalStrategy=require("passport-local");
@@ -23,18 +25,19 @@ const listingRouter=require("./routes/listing");
 const reviewRouter=require("./routes/review");
 const userRouter=require("./routes/user");
 
-const MONGO_URL="mongodb://127.0.0.1:27017/vanderLost";
+// const MONGO_URL="mongodb://127.0.0.1:27017/vanderLost";
+const dbUrl=process.env.ATLASDB_URL;
 
 main()
     .then(()=>{
         console.log("connected to url");
     })
-    .catch(()=>{
+    .catch((err)=>{
         console.log(err);
     });
 
 async function main(){
-    await mongoose.connect(MONGO_URL);
+    await mongoose.connect(dbUrl);
 }
 
 app.set("view engine","ejs");
@@ -44,8 +47,22 @@ app.use(methodOverride("_method"));
 app.engine("ejs",ejsMate);
 app.use(express.static(path.join(__dirname,"/public")));
 
+const store=MongoStore.create({
+    mongoUrl:dbUrl,
+    crypto:{
+        secret:process.env.SECRET,
+    },
+    touchAfter:24*3600
+
+})
+
+store.on("error",()=>{
+    console.log("ERROR IN MONGO SESSION STORE",err);
+})
+
 const sessionOptions={
-    secret:"mysupersecretcode",
+    store:store,
+    secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
     cookie:{
@@ -54,6 +71,8 @@ const sessionOptions={
         httpOnly:true,
     }
 }
+
+
 
 // app.get("/",(req,res)=>{
 //     res.send("hi , i am root");

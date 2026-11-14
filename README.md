@@ -154,7 +154,7 @@ node app.js
 Open your browser and visit:
 
 ```text
-http://localhost:8080
+http://localhost:8080(WILL RENDER IT AFTER ADDING SOME FEATURES)
 ```
 
 ---

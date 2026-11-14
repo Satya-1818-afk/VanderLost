@@ -63,7 +63,7 @@ Built using the **MERN ecosystem (MongoDB, Express.js, Node.js)** with EJS as th
 | Frontend           | EJS, HTML, CSS, JavaScript, Bootstrap |
 | Database           | MongoDB, Mongoose                     |
 | Authentication     | Passport.js, Passport-Local-Mongoose  |
-| Maps               | Mapbox                                |
+| Maps               | Mapbox(geocoding)                              |
 | Image Uploads      | Cloudinary, Multer                    |
 | Validation         | Joi                                   |
 | Session Management | Express-Session, Connect-Mongo        |
